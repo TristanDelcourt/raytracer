@@ -44,6 +44,14 @@ impl Vec3 {
         let len = self.length();
         Vec3::new(self.x / len, self.y / len, self.z / len)
     }
+
+    pub fn cross(self, v: Vec3) -> Vec3 {
+        Vec3::new(
+            self.y * v.z - self.z * v.y,
+            self.z * v.x - self.x * v.z,
+            self.x * v.y - self.y * v.x,
+        )
+    }
 }
 
 impl Add for Vec3 {

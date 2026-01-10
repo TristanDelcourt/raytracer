@@ -1,3 +1,4 @@
+mod camera;
 mod hittable;
 mod material;
 mod ray;
@@ -13,6 +14,8 @@ use vec3::Vec3;
 
 use material::{Diffuse, Light, Reflective};
 use std::{f64, sync::Arc};
+
+use crate::camera::Camera;
 
 fn sky_colour(ray: Ray) -> Vec3 {
     let t = 0.5 * (ray.direction.unit_vector().y + 1.0);
@@ -43,20 +46,18 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: u32 = 1920;
     let image_height = (image_width as f64 / aspect_ratio) as u32;
+    let samples_per_pixel = 64;
 
     println!("P3\n{image_width} {image_height}\n255");
 
-    let viewport_height = 1.;
-    let viewport_width = viewport_height * aspect_ratio;
-    let focal_length = 2.;
-    let camera_origin = Vec3::new(0., 0., 0.);
-    let samples_per_pixel = 1024;
+    let cam = Camera::new(
+        Vec3::new(6., 4., 0.),
+        Vec3::new(0., 0., -25.),
+        Vec3::new(0., 1., 0.),
+        50.,
+        aspect_ratio,
+    );
 
-    let port_image_hratio = viewport_height / image_height as f64;
-    let port_image_wratio = viewport_width / image_width as f64;
-
-    let top_left =
-        camera_origin + Vec3::new(-viewport_width / 2., viewport_height / 2., -focal_length);
     let objects: Arc<Vec<Box<dyn Hittable + Send + Sync>>> = Arc::new(vec![
         Box::new(Sphere::new(
             Vec3::new(0., -10000.5, 0.),
@@ -95,9 +96,11 @@ fn main() {
                         let v_offset: f64 = rng.random_range(0.0..1.0);
 
                         let ray = Ray::new(
-                            camera_origin,
-                            top_left + Vec3::new((x as f64 + u_offset) * port_image_wratio, 0., 0.)
-                                - Vec3::new(0., (y as f64 + v_offset) * port_image_hratio, 0.),
+                            cam.origin,
+                            cam.top_left
+                                + cam.horizontal * ((x as f64 + u_offset) / image_width as f64)
+                                - cam.vertical * ((y as f64 + v_offset) / image_height as f64)
+                                - cam.origin,
                         );
 
                         colour = colour + ray_colour(ray, &*objects, 50);
