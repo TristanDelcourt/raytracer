@@ -46,7 +46,7 @@ fn main() {
     let aspect_ratio = 16.0 / 9.0;
     let image_width: u32 = 1920;
     let image_height = (image_width as f64 / aspect_ratio) as u32;
-    let samples_per_pixel = 64;
+    let samples_per_pixel = 4096;
 
     println!("P3\n{image_width} {image_height}\n255");
 
@@ -72,7 +72,7 @@ fn main() {
         Box::new(Sphere::new(
             Vec3::new(4., 2.5, -14.),
             0.5,
-            Light::new(Vec3::new(1., 0.87, 0.13)),
+            Light::new(Vec3::new(1., 0.87, 0.13), 100.),
         )),
         Box::new(Sphere::new(
             Vec3::new(-12., 8.5, -35.),

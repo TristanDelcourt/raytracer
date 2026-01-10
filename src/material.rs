@@ -66,11 +66,15 @@ impl Material for Diffuse {
 
 pub struct Light {
     albedo: Vec3,
+    intensity: f64,
 }
 
 impl Light {
-    pub fn new(albedo: Vec3) -> Self {
-        Self { albedo: albedo }
+    pub fn new(albedo: Vec3, intensity: f64) -> Self {
+        Self {
+            albedo: albedo,
+            intensity: intensity,
+        }
     }
 }
 
@@ -80,6 +84,6 @@ impl Material for Light {
     }
 
     fn emmited(&self) -> Vec3 {
-        self.albedo
+        self.albedo * self.intensity
     }
 }
