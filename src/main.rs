@@ -6,6 +6,7 @@ mod sphere;
 mod vec3;
 
 use hittable::Hittable;
+use indicatif::{ParallelProgressIterator, ProgressBar, ProgressStyle};
 use rand::Rng;
 use ray::Ray;
 use rayon::prelude::*;
@@ -81,8 +82,16 @@ fn main() {
         )),
     ]);
 
+    let progress_bar = ProgressBar::new(image_height as u64);
+    progress_bar.set_style(
+        ProgressStyle::default_bar()
+            .template("[{elapsed_precise}/{eta_precise}] {wide_bar:.cyan/blue} {pos:>4}/{len:4}")
+            .unwrap(),
+    );
+
     let pixels: Vec<Vec3> = (0..image_height)
         .into_par_iter()
+        .progress_with(progress_bar)
         .flat_map(|y| {
             let objects = Arc::clone(&objects);
             (0..image_width)
@@ -112,7 +121,6 @@ fn main() {
         })
         .collect();
 
-    // Then print them
     for colour in pixels {
         println!(
             "{} {} {}",
