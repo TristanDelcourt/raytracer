@@ -1,6 +1,6 @@
-use std::ops::{Add, Div, Mul, Sub};
+use std::ops::{Add, Div, Mul, Neg, Sub};
 
-use rand::Rng;
+use rand::{Rng, rngs::SmallRng};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vec3 {
@@ -9,8 +9,7 @@ pub struct Vec3 {
     pub z: f64,
 }
 
-pub fn random_unit_vector() -> Vec3 {
-    let mut rng = rand::rng();
+pub fn random_unit_vector(rng: &mut SmallRng) -> Vec3 {
     loop {
         let v = Vec3::new(
             rng.random_range(-1.0..1.0),
@@ -99,5 +98,12 @@ impl Div<f64> for Vec3 {
 
     fn div(self, scaler: f64) -> Vec3 {
         Vec3::new(self.x / scaler, self.y / scaler, self.z / scaler)
+    }
+}
+
+impl Neg for Vec3 {
+    type Output = Vec3;
+    fn neg(self) -> Vec3 {
+        Vec3::new(-self.x, -self.y, -self.z)
     }
 }

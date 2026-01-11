@@ -32,6 +32,11 @@ impl<M: Material> Hittable for Sphere<M> {
         let t = (-b - delta.sqrt()) / (2. * a);
         let point = ray.at(t);
         let normal = (point - self.center).unit_vector();
+        let normal = if ray.direction.dot(normal) > 0. {
+            -normal
+        } else {
+            normal
+        };
         if delta >= 0. && t >= t_min && t <= t_max {
             Some(HitRecord {
                 point: point,
